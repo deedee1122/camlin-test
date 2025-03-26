@@ -5,10 +5,9 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-50 dark:bg-gray-900 mt-10">
+    <footer className="mt-10">
+      <Separator className="" />
       <div className="container max-w-7xl mx-auto px-6 py-8">
-        <Separator className="mb-8" />
-
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="text-center md:text-left mb-6 md:mb-0">
             <h3 className="text-lg font-bold mb-2">

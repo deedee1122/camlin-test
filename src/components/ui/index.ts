@@ -7,3 +7,5 @@ export * from "./card";
 export * from "./checkbox";
 export * from "./separator";
 export * from "./dropdown-menu";
+export * from "./badge";
+export * from "./select";

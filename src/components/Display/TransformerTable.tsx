@@ -31,7 +31,7 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
           placeholder="Search transformers..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-sm"
+          className="max-w"
         />
       </div>
       <div className="border rounded-md">

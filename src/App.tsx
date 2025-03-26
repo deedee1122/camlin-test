@@ -5,14 +5,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 const App = () => {
   return (
     <BrowserRouter>
+      <Navbar />
       <div className="container max-w-7xl mx-auto">
-        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
-        <Footer />
       </div>
+
+      <Footer />
     </BrowserRouter>
   );
 };

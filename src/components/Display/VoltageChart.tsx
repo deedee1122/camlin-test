@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   LineChart,
   Line,
@@ -19,6 +19,7 @@ import {
 } from "../ui";
 import { Transformer } from "../../Types";
 import { format } from "date-fns";
+import { RootState, setSelectedTransformerIds } from "../../store";
 
 interface VoltageChartProps {
   transformers: Transformer[];
@@ -34,38 +35,37 @@ const COLORS = [
 ];
 
 export function VoltageChart({ transformers }: VoltageChartProps) {
-  const [selectedTransformers, setSelectedTransformers] = useState<number[]>(
-    transformers.map((t) => t.assetId)
+  const dispatch = useDispatch();
+  const selectedTransformerIds = useSelector(
+    (state: RootState) => state.filters.selectedTransformerIds
   );
 
   const toggleTransformer = (assetId: number) => {
-    setSelectedTransformers((prev) => {
-      if (prev.includes(assetId)) {
-        return prev.filter((id) => id !== assetId);
-      } else {
-        return [...prev, assetId];
-      }
-    });
+    const newSelection = selectedTransformerIds.includes(assetId)
+      ? selectedTransformerIds.filter((id) => id !== assetId)
+      : [...selectedTransformerIds, assetId];
+
+    dispatch(setSelectedTransformerIds(newSelection));
   };
 
-  const chartData = transformers[0].lastTenVoltgageReadings
-    .map((_, index) => {
-      const dataPoint: any = {
-        date: format(
-          new Date(transformers[0].lastTenVoltgageReadings[index].timestamp),
-          "MMM dd"
-        ),
-      };
-
-      transformers.forEach((transformer) => {
-        dataPoint[transformer.name] = parseInt(
-          transformer.lastTenVoltgageReadings[index].voltage
-        );
-      });
-
-      return dataPoint;
-    })
-    .reverse();
+  // Prepare data for the chart
+  const chartData =
+    transformers[0]?.lastTenVoltgageReadings
+      .map((_, index) => {
+        const dataPoint: any = {
+          date: format(
+            new Date(transformers[0].lastTenVoltgageReadings[index].timestamp),
+            "MMM dd"
+          ),
+        };
+        transformers.forEach((transformer) => {
+          dataPoint[transformer.name] = parseInt(
+            transformer.lastTenVoltgageReadings[index].voltage
+          );
+        });
+        return dataPoint;
+      })
+      .reverse() || [];
 
   return (
     <Card>
@@ -85,7 +85,9 @@ export function VoltageChart({ transformers }: VoltageChartProps) {
                 >
                   <Checkbox
                     id={`transformer-${transformer.assetId}`}
-                    checked={selectedTransformers.includes(transformer.assetId)}
+                    checked={selectedTransformerIds.includes(
+                      transformer.assetId
+                    )}
                     onCheckedChange={() =>
                       toggleTransformer(transformer.assetId)
                     }
@@ -104,7 +106,6 @@ export function VoltageChart({ transformers }: VoltageChartProps) {
               ))}
             </div>
           </div>
-
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
@@ -125,7 +126,7 @@ export function VoltageChart({ transformers }: VoltageChartProps) {
                 <Legend />
                 {transformers.map(
                   (transformer, index) =>
-                    selectedTransformers.includes(transformer.assetId) && (
+                    selectedTransformerIds.includes(transformer.assetId) && (
                       <Line
                         key={transformer.assetId}
                         type="monotone"

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Input,
   Table,
@@ -18,15 +19,24 @@ import {
 } from "../ui";
 import { Transformer } from "../../Types";
 import { X } from "lucide-react";
+import {
+  setSelectedTransformerIds,
+  setSearchQuery,
+  setRegionFilter,
+  setHealthFilter,
+  clearAllFilters,
+  RootState,
+} from "../../store";
 
 interface TransformerTableProps {
   transformers: Transformer[];
 }
 
 export function TransformerTable({ transformers }: TransformerTableProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [regionFilter, setRegionFilter] = useState<string>("all");
-  const [healthFilter, setHealthFilter] = useState<string>("all");
+  const dispatch = useDispatch();
+  const { searchQuery, regionFilter, healthFilter } = useSelector(
+    (state: RootState) => state.filters
+  );
 
   // Get unique regions and health statuses for filters
   const regions = Array.from(new Set(transformers.map((t) => t.region)));
@@ -53,9 +63,7 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchQuery("");
-    setRegionFilter("all");
-    setHealthFilter("all");
+    dispatch(clearAllFilters());
   };
 
   // Check if any filter is active
@@ -69,7 +77,7 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
         <Input
           placeholder="Search transformers..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => dispatch(setSearchQuery(e.target.value))}
           className="w-full"
         />
       </div>
@@ -77,7 +85,10 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1">
-          <Select value={regionFilter} onValueChange={setRegionFilter}>
+          <Select
+            value={regionFilter}
+            onValueChange={(value) => dispatch(setRegionFilter(value))}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by Region" />
             </SelectTrigger>
@@ -95,7 +106,10 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
         </div>
 
         <div className="flex-1">
-          <Select value={healthFilter} onValueChange={setHealthFilter}>
+          <Select
+            value={healthFilter}
+            onValueChange={(value) => dispatch(setHealthFilter(value))}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by Health" />
             </SelectTrigger>
@@ -132,7 +146,7 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
             <Badge
               variant="outline"
               className="flex gap-1 items-center cursor-pointer"
-              onClick={() => setSearchQuery("")}
+              onClick={() => dispatch(setSearchQuery(""))}
             >
               Search: {searchQuery}
               <X className="h-3 w-3" />
@@ -143,7 +157,7 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
             <Badge
               variant="outline"
               className="flex gap-1 items-center cursor-pointer"
-              onClick={() => setRegionFilter("all")}
+              onClick={() => dispatch(setRegionFilter("all"))}
             >
               Region: {regionFilter}
               <X className="h-3 w-3" />
@@ -154,7 +168,7 @@ export function TransformerTable({ transformers }: TransformerTableProps) {
             <Badge
               variant="outline"
               className="flex gap-1 items-center cursor-pointer"
-              onClick={() => setHealthFilter("all")}
+              onClick={() => dispatch(setHealthFilter("all"))}
             >
               Health: {healthFilter}
               <X className="h-3 w-3" />

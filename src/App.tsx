@@ -1,11 +1,20 @@
-import { Button } from "./components/ui/button";
+import { Footer, Navbar } from "./components/Layout";
+import { Home, ErrorPage } from "./pages";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
+const App = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
+    <BrowserRouter>
+      <div className="container max-w-7xl mx-auto">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="*" element={<ErrorPage />} />
+        </Routes>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
